@@ -1,13 +1,13 @@
 {
-  "name": "graphql-codegen-sequelize-typescript",
+  "name": "graphql-codegen-resolvers",
   "version": "1.0.0",
-  "description": "Sequelize-typescript generators for GraphQL Codegen.",
+  "description": "Resolvers generators for GraphQL Codegen.",
   "main": "src/index.js",
   "author": "Jens Kolberg <jens.kolberg@gamesdynamics.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GD-Aichi/graphql-codegen-sequelize-typescript.git"
+    "url": "git+https://github.com/GD-Aichi/graphql-codegen-resolvers.git"
   },
   "peerDependencies": {},
   "dependencies": {},
