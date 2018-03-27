@@ -1,6 +1,6 @@
 {
   "name": "graphql-codegen-resolvers",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Resolvers generators for GraphQL Codegen.",
   "main": "src/index.js",
   "author": "Jens Kolberg <jens.kolberg@gamesdynamics.com>",
