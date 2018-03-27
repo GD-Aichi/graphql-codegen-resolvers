@@ -1,0 +1,84 @@
+{{#ifDirective this "resolvers" }}
+/* tslint:disable */
+
+{{#each fields}}
+{{#ifDirective this "connection" }}
+import { {{ node }}Model } from '../models/{{ node }}Model';
+import { {{ node }} } from '../models/types/{{ toCamelCase node }}.type';
+import { {{ node }}Connection } from '../models/types/{{ toCamelCase node }}connection.type';
+import { getNodesFromConnection } from '@gd-grial/server/dist';
+{{/ifDirective}}
+{{/each}}
+
+export default {
+  {{ name }}: {
+    {{#each fields}}
+    {{#ifDirective this "connection" }}
+    {{ name }}: async (rootValue: any, {connection}: any, context): Promise<{{ node }}Connection> => {
+      return await getNodesFromConnection<{{ node }}, {{ node }}Model>(connection, {{ node }}Model);
+    },
+    {{/ifDirective}}
+    {{#ifDirective this "query" }}
+    {{ name }}: async (rootValue: any, args: any, context): Promise<{{ ../type }}{{#if isArray }}[]{{/if}}> => {
+      {{#if isArray }}
+      return <{{ ../type }}[]> (await {{ ../type }}Model.findAll()).map(model => model.toJSON());
+      {{else}}
+      const model = {{ ../type }}Model.findOne({
+        where: {
+          id: args.id
+        }
+      });
+      if (!model) {
+        throw new Error('no {{ ../type }} exists with id ' + args.id);
+      }
+      return <{{ ../type }}>model.toJSON();
+      {{/if}}
+    },
+    {{/ifDirective}}
+    {{#ifDirective this "utilities" }}
+    {{ name }}: async (obj, args: any, context): Promise<any> => {
+      return await context.utilities.{{ ../type }}Utility.{{#if method}}{{method}}{{else}}{{ ../name }}{{/if}}(args, context)
+    },
+    {{/ifDirective}}
+    {{/each}}
+  }
+}
+{{else}}
+{{#ifDirective this "entity" }}
+{{#hasTypes this}}
+/* tslint:disable */
+
+{{#eachImport this }}
+import { {{ name }} } from '../models/types/{{ toCamelCase name }}.type';
+import { {{ name }}Model } from '../models/{{ name }}Model';
+{{/eachImport}}
+
+export default {
+  {{ name }}: {
+  {{#each fields }}
+    {{#ifDirective this "BelongsTo" }}
+    {{name}}: async ({{ toCamelCase ../../name }}, args, context): Promise<{{../type}}{{#if isArray}}[]{{/if}}> => {
+      {{#ifDirective ../this "loadFromCache" }}
+      if(!{{ toCamelCase ../../../name }}.{{#if foreignKey}}{{foreignKey}}{{else}}{{ ../name }}Id{{/if}}) {
+        return null;
+      }
+      let {{ toCamelCase ../type }} = await context.loaders.{{ toCamelCase ../name }}ByIdLoader.load({{ toCamelCase ../../../name }}.{{#if foreignKey }}{{foreignKey}}{{else}}{{ ../name }}Id{{/if}});
+      if ({{ toCamelCase ../type }} && {{ toCamelCase ../type }}.length) {
+        {{ toCamelCase ../type }} = {{ toCamelCase ../type }}[0];
+      }
+      return {{ toCamelCase ../type }};
+      {{else}}
+      const {{ toCamelCase ../type}} = await  {{../type}}Model.findById<{{../type}}Model>({{ toCamelCase ../../../name }}.{{#if foreignKey}}{{foreignKey}}{{else}}{{ ../name }}Id{{/if}});
+      if ({{ toCamelCase ../type}}) {
+        return {{ toCamelCase ../type}}.toJSON();
+      }
+      return null;
+    {{/ifDirective}}
+    },
+  {{/ifDirective}}
+  {{/each}}
+  },
+};
+{{/hasTypes}}
+{{/ifDirective}}
+{{/ifDirective}}

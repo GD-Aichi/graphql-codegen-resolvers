@@ -1,0 +1,15 @@
+{{#ifDirective this "resolveType" }}
+{{ toComment description }}
+export default {
+  {{ name }}: {
+    __resolveType(data, context, info) {
+      {{#each list}}
+      if (data.{{this.unitKey}}) {
+        return info.schema.getType('{{this.type}}');
+      }
+      {{/each}}
+      return null;
+    }
+  }
+}
+{{/ifDirective}}
